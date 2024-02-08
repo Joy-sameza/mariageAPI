@@ -6,12 +6,12 @@ RUN docker-php-ext-install pdo pdo_mysql
 # Copy application code
 COPY . /var/www/html
 
-# Verify composer is installed 
+# RUN composer install
+RUN php /tmp/composer-setup.php --install-dir= /usr/local/bin --filename= composer
 RUN composer --version
 
 # Install Composer dependencies
-# RUN composer install
-# RUN /usr/local/bin/composer install --optimize
+RUN /usr/bin/composer install --optimize
 
 # # Copy database schema
 # COPY config/schema.sql /docker-entrypoint-initdb.d/
