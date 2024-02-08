@@ -1,0 +1,30 @@
+version: "3.9"
+
+services:
+  mysql:
+    image: mysql:8.0
+    ports:
+      - "3307:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: 12345
+      MYSQL_DATABASE: auth
+      MYSQL_USER: root
+      MYSQL_PASSWORD: 12345
+    volumes:
+      - mysql-data:/var/lib/mysql
+
+  api:
+    build: .
+    ports:
+      - "8080:80"
+    environment:
+      DB_HOST: mysql
+      DB_USER: root
+      DB_PASSWORD: 12345
+      DB_NAME: auth
+      JWT_KEY: bXVjQSlO7hqlu47NegA9XZbVXwJvoP6+UCmuRLYjVk9+NrgSvJEeobruSR2mkT5uutp02Ko5fiR85fZ2IGlaNL1YbaWr6V++Ymio52YLvLJ4nGHw0tjYZkd/rSjrxxk7LjeUnLvnmA4OkO9i4CLNdUB9DQFesu/hwZnYaZypmxnn38Rtjsv3L2Tr29QL1ueZO9+e5LJ6QvMQMUzZVQxk3JSY7UdzH3aLLMN/tnSLwN7588Mq/cKnV/40bp1hhT1GwjkNwDfbYmlYRInOGHrmRZMRy3pBwIMoVUWRV/c1owON5955nzV1CbXTPAPb2oxvrUOiL27kNx7cm9kow3JNQA==
+    depends_on:
+      - mysql
+
+volumes:
+  mysql-data:

@@ -1,13 +1,19 @@
-FROM php:8.3.2-apache
+FROM php:8.2-apache
 
-WORKDIR /var/www/html
+# Install PDO and other dependencies
+RUN docker-php-ext-install pdo pdo_mysql
 
-COPY . .
+# Copy application code
+COPY . /var/www/html
 
-RUN apt-get update && \
-    apt-get install -y libpng-dev && \
-    docker-php-ext-install pdo pdo_mysql gd
+# Install Composer dependencies
+RUN composer install --optimize
 
+# Copy database schema
+COPY config/schema.sql /docker-entrypoint-initdb.d/
+
+# Expose port 80
 EXPOSE 80
 
+# Start Apache
 CMD ["apache2-foreground"]
