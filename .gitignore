@@ -2,5 +2,5 @@ composer.lock
 vendor
 services
 swagger-ui
-config
+config/config.php
 .json
