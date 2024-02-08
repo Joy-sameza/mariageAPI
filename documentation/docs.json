@@ -1,0 +1,368 @@
+{
+  "openapi": "3.0.0",
+  "servers": [
+    {
+      "description": "Local server",
+      "url": "http://localhost/auth"
+    },
+    {
+      "description": "Remote server",
+      "url": "https://mariage.donjul-service.com"
+    }
+  ],
+  "info": {
+    "title": "Donjul Marriage API",
+    "version": "1.0.0",
+    "description": "API for handling actions in donjul mariage apps",
+    "contact": {
+      "email": "support@donjul-service.com"
+    },
+    "license": {
+      "name": "Apache-2.0"
+    }
+  },
+  "paths": {
+    "/login": {
+      "post": {
+        "summary": "Login to the system",
+        "description": "Logs in a user or admin with the provided credentials.",
+        "tags": ["Authentication"],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Logged in successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LoginResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid credentials",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/register": {
+      "post": {
+        "summary": "User registration",
+        "description": "Registers a new user with the provided information.",
+        "tags": ["Registration"],
+        "requestBody": {
+          "description": "User details for registration",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserRegistrationRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Registered successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserRegistrationResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Admin with given id not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdminError404"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "User already exists.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "User already exists"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/registerAdmin": {
+      "post": {
+        "summary": "Create admin account",
+        "description": "Creates an admin account. Requires authentication as existing Super Admin.",
+        "tags": ["Registration"],
+        "security": [{ "BearerAuth": [] }],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AdminRegistrationRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Registered successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdminRegistrationResponse"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Admin already exists",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Admin already exists"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/update/{id}": {
+      "parameters": [
+        {
+          "in": "path",
+          "name": "id",
+          "required": true,
+          "schema": { "type": "integer" },
+          "description": "ID of user to update"
+        }
+      ],
+      "patch": {
+        "tags": ["Users", "Admin"],
+        "summary": "Update user details",
+        "description": "Updates user details based on the provided data.",
+        "security": [{ "BearerAuth": [] }],
+        "operationId": "updateUser",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserUpdate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Updated successfully"
+                    },
+                    "username": {
+                      "type": "string",
+                      "example": "MATS2_114"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "304": {
+            "description": "Nothing modified"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "BearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    },
+    "schemas": {
+      "UserUpdate": {
+        "type": "object",
+        "properties": {
+          "actual_name": { "type": "string", "example": "Jane Doe" },
+          "telephone": { "type": "string", "example": "675096403" },
+          "password": { "type": "string", "example": "abc123" },
+          "archived": { "type": "boolean", "default": false },
+          "admin_id": { "$ref": "#/components/schemas/IdParam" }
+        },
+        "required": ["admin_id"]
+      },
+      "LoginRequest": {
+        "type": "object",
+        "properties": {
+          "username": {
+            "type": "string",
+            "example": "MATS2_113"
+          },
+          "password": {
+            "type": "string",
+            "example": "MATS2_113"
+          }
+        },
+        "required": ["username", "password"]
+      },
+      "LoginResponse": {
+        "type": "object",
+        "properties": {
+          "token": {
+            "type": "string",
+            "example": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9"
+          },
+          "username": {
+            "type": "string",
+            "example": "MATS2_113"
+          },
+          "response": {
+            "type": "boolean",
+            "example": true
+          },
+          "message": {
+            "type": "string",
+            "example": "Logged in successfully"
+          },
+          "isAdmin": {
+            "type": "boolean",
+            "example": true
+          }
+        }
+      },
+      "UserRegistrationRequest": {
+        "type": "object",
+        "properties": {
+          "actual_name": {
+            "type": "string",
+            "example": "John Doe"
+          },
+          "telephone": {
+            "type": "string",
+            "example": "+237699000333"
+          },
+          "admin_id": {
+            "$ref": "#/components/schemas/IdParam"
+          }
+        },
+        "required": ["actual_name", "telephone", "admin_id"]
+      },
+      "UserRegistrationResponse": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "example": "Registered successfully"
+          },
+          "info": {
+            "type": "object",
+            "example": {
+              "id": 63,
+              "username": "MATS2_114",
+              "password": "MATS2_114"
+            }
+          }
+        }
+      },
+      "AdminRegistrationRequest": {
+        "type": "object",
+        "properties": {
+          "actual_name": {
+            "type": "string",
+            "description": "The actual name of the admin.",
+            "example": "John Doe"
+          },
+          "telephone": {
+            "type": "string",
+            "example": "+237699000333"
+          },
+          "password": {
+            "type": "string",
+            "example": "password"
+          }
+        },
+        "required": ["actual_name", "telephone", "password"]
+      },
+      "AdminRegistrationResponse": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "example": "Registered successfully"
+          },
+          "info": {
+            "type": "object",
+            "example": {
+              "id": "18",
+              "username": "JODE1"
+            }
+          }
+        }
+      },
+      "IdParam": {
+        "type": "integer",
+        "example": 16
+      },
+      "Error": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "string",
+            "example": "Invalid credentials"
+          }
+        }
+      },
+      "AdminError404": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "string",
+            "example": "Admin not found"
+          }
+        }
+      }
+    }
+  }
+}

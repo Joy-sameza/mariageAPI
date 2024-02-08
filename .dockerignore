@@ -1,0 +1,6 @@
+composer.lock
+vendor
+services
+swagger-ui
+documentation
+README.md
