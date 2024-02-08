@@ -3,3 +3,4 @@ vendor
 services
 swagger-ui
 config
+.json
