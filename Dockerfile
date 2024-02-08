@@ -6,15 +6,18 @@ RUN docker-php-ext-install pdo pdo_mysql
 # Copy application code
 COPY . /var/www/html
 
+# Verify composer is installed 
+RUN composer --version
+
 # Install Composer dependencies
 # RUN composer install
-RUN /usr/local/bin/composer install --optimize
+# RUN /usr/local/bin/composer install --optimize
 
-# Copy database schema
-COPY config/schema.sql /docker-entrypoint-initdb.d/
+# # Copy database schema
+# COPY config/schema.sql /docker-entrypoint-initdb.d/
 
-# Expose port 80
-EXPOSE 80
+# # Expose port 80
+# EXPOSE 80
 
-# Start Apache
-CMD ["apache2-foreground"]
+# # Start Apache
+# CMD ["apache2-foreground"]
