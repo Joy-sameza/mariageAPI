@@ -14,8 +14,8 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: composer-cache
-        #   path: vendor
-          path: .
+          path: vendor
+        #   path: .
 
   api:
     name: Build API
@@ -23,11 +23,10 @@ jobs:
     needs: build
     steps:
       - name: Download artifacts
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: composer-cache
-          path: ${{ github.workspace }}
-          merge_multiple: true
+        #   path: .
       - name: Build API
         run: |
           docker build . -t php-api:${{ github.run_number }}
