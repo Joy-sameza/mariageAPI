@@ -10,12 +10,22 @@ jobs:
         uses: php-actions/composer@v6
         with:
           php_version: 8.3
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: composer-cache
+        #   path: vendor
+          path: .
 
   api:
     name: Build API
     runs-on: ubuntu-latest
     needs: build
     steps:
+      - name: Download artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: composer-cache
       - name: Build API
         run: |
           docker build . -t php-api:${{ github.run_number }}
