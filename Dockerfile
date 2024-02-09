@@ -10,7 +10,7 @@ COPY . /var/www/html
 # RUN php /tmp/composer-setup.php --install-dir= /usr/local/bin --filename= composer
 # RUN composer --version
 
-RUN ls -l /tmp
+RUN ls -r /tmp
 
 # Install Composer dependencies
 # RUN /usr/bin/composer install --optimize
