@@ -14,8 +14,12 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: composer-cache
-          path: vendor
-        #   path: .
+          path: .
+      - name: Zip archive
+        uses: TheDoctor0/zip-release@0.7.6
+        with:
+          filename: composer-cache
+          path: .
 
   api:
     name: Build API
@@ -26,7 +30,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: composer-cache
-        #   path: .
+          path: .
       - name: Build API
         run: |
           docker build . -t php-api:${{ github.run_number }}
