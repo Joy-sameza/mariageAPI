@@ -1,15 +1,21 @@
 on: push
 jobs:
   build:
-    name: Build the PHP API using APache-server
+    name: Download composer packages
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout The PHP API using APache-server
+      - name: Checkout The PHP API using Apache-server
         uses: actions/checkout@v4
       - name: Composer (PHP action)
         uses: php-actions/composer@v6
         with:
-            php_version: 8.3
+          php_version: 8.3
+
+  api:
+    name: Build API
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
       - name: Build API
         run: |
           docker build . -t php-api:${{ github.run_number }}
