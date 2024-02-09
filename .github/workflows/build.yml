@@ -26,6 +26,8 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: composer-cache
+          path: ${{ github.workspace }}
+          merge_multiple: true
       - name: Build API
         run: |
           docker build . -t php-api:${{ github.run_number }}
