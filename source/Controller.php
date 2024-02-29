@@ -145,7 +145,7 @@ class Controller
                             ]);
                             return;
                         }
-                        if (is_array($output) && array_key_exists("ad_error", $output)) {
+                        if (array_key_exists("ad_error", $output)) {
                             http_response_code(404);
                             echo json_encode([
                                 "error" => "Admin with given id not found",
@@ -156,29 +156,6 @@ class Controller
                         echo json_encode([
                             "message" => "Registered successfully",
                             "info" => $output,
-                        ]);
-                        break;
-                    case 'registerGuest':
-                        $data = $this->getUserInputsAndVerify($path);
-                        if (empty($data)) return;
-                        $output = $this->RegisterLogin->addGuest($data);
-                        if ($output === false) {
-                            http_response_code(409);
-                            echo json_encode([
-                                "error" => "Guest already exists",
-                            ]);
-                            return;
-                        }
-                        if (is_array($output) && array_key_exists("ad_error", $output)) {
-                            http_response_code(404);
-                            echo json_encode([
-                                "error" => "Admin with given id not found",
-                            ]);
-                            return;
-                        }
-                        http_response_code(201);
-                        echo json_encode([
-                            "message" => "Registered guest successfully"
                         ]);
                         break;
                     case 'registerAdmin':
@@ -302,15 +279,14 @@ class Controller
                     echo json_encode(["error" => "Invalid request"]);
                     break;
                 }
-                $newData = $this->getUserInputsAndVerify('delete');
-                if ($data['admin_ref'] !== $newData['admin_ref']) {
-                    http_response_code(401);
-                    echo json_encode([
-                        'error' => 'You do not have permission to delete this user'
-                    ]);
-                    break;
+                if (!isset($_GET['userId']) || !isset($_GET['adminId'])) {
+                    http_response_code(400);
+                    echo json_encode(["error" => "Admin and User IDs are both required"]);
+                    return;
                 }
-                $res = $this->RegisterLogin->deleteUser($id, $newData['admin_ref']);
+                $adminId = $_GET['adminId'];
+                $userId = $_GET['userId'];
+                $res = $this->RegisterLogin->deleteUser($userId, $adminId);
                 if ($res === false) {
                     http_response_code(500);
                     echo json_encode([
@@ -359,6 +335,8 @@ class Controller
                 $errors['telephone'] = "Telephone is required";
             } elseif (!preg_match($telephone_regex, $data['telephone'])) {
                 $errors['telephone'] = "Invalid telephone number";
+            } elseif (strlen($data['telephone']) >= 9) {
+                $data['telephone'] = "+237" . substr($data['telephone'], -9);
             }
 
             if (!empty($data['password']) && !preg_match($password_regex, $data['password'])) {
