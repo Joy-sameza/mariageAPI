@@ -460,7 +460,7 @@ class Authenticate
             return [
                 'users' => [],
                 'page' => 1,
-                'per_page' => per_page,
+                'per_page' => $per_page,
                 'total_pages' => 0,
                 'total_items' => 0,
             ];
