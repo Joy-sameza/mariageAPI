@@ -25,38 +25,6 @@ class Authenticate
         $this->authTokens = $auth;
     }
 
-
-    /**
-     * @OA\Get(
-     *   path="/update",
-     *   summary="Get user details for update",
-     *   description="Retrieves user details for update based on admin authorization.",
-     *   @OA\Parameter(
-     *     name="id",
-     *     in="query",
-     *     required=true,
-     *     description="User ID",
-     *     @OA\Schema(type="integer"),
-     *   ),
-     *   @OA\Response(
-     *     response=200,
-     *     description="User details for update",
-     *     @OA\JsonContent(ref="#/components/schemas/UserInfo"),
-     *   ),
-     *   @OA\Response(
-     *     response=400,
-     *     description="Bad request",
-     *     @OA\JsonContent(ref="#/components/schemas/ValidationErrors"),
-     *   ),
-     *   @OA\Response(
-     *     response=404,
-     *     description="User not found",
-     *     @OA\JsonContent(
-     *       @OA\Property(property="error", type="string", example="User not found"),
-     *     ),
-     *   ),
-     * )
-     */
     /**
      * Retrieves a user| guest from the database based on the provided ID.
      *
@@ -289,48 +257,9 @@ class Authenticate
     }
 
     /**
-     * @OA\Delete(
-     *   path="/delete",
-     *   summary="Delete user",
-     *   description="Deletes a user based on the provided data.",
-     *   @OA\RequestBody(
-     *     required=true,
-     *     @OA\JsonContent(ref="#/components/schemas/DeleteUserInput"),
-     *   ),
-     *   @OA\Response(
-     *     response=200,
-     *     description="User deleted successfully",
-     *     @OA\JsonContent(
-     *       @OA\Property(property="message", type="string", example="Deleted successfully"),
-     *       @OA\Property(property="user", type="string", example="John Doe"),
-     *     ),
-     *   ),
-     *   @OA\Response(
-     *     response=400,
-     *     description="Bad request",
-     *     @OA\JsonContent(ref="#/components/schemas/ValidationErrors"),
-     *   ),
-     *   @OA\Response(
-     *     response=401,
-     *     description="Unauthorized",
-     *     @OA\JsonContent(
-     *       @OA\Property(property="error", type="string", example="You do not have permission to delete this user"),
-     *     ),
-     *   ),
-     *   @OA\Response(
-     *     response=500,
-     *     description="Internal Server Error",
-     *     @OA\JsonContent(
-     *       @OA\Property(property="error", type="string", example="An error occurred"),
-     *     ),
-     *   ),
-     * )
-     */
-    /**
      * Deletes a user from the database.
      *
      * @param string $id The ID of the user to be deleted.
-     * @throws Some_Exception_Class If there is an error executing the SQL statement.
      * @return bool Returns true if the user is successfully deleted, false otherwise.
      */
     public function deleteUser(string $id, string $admin_ref): bool
@@ -346,21 +275,6 @@ class Authenticate
         return $stmt->execute();
     }
 
-    /**
-     * @OA\Get(
-     *   path="/verify/token",
-     *   summary="Checks the validity of a token.",
-     *   @OA\Parameter(
-     *     name="token",
-     *     in="query",
-     *     description="Authentication token to be verified.",
-     *     required=true,
-     *     @OA\Schema(type="string")
-     *   ),
-     *   @OA\Response(response=200, description="Token is valid"),
-     *   @OA\Response(response=401, description="Token is invalid"),
-     * )
-     */
     /** 
      * Checks for the calidity of a token and returns true if valid and false otherwise.
      * 
@@ -372,37 +286,6 @@ class Authenticate
         return $this->authTokens->verify($token);
     }
 
-    /**
-     * @OA\Post(
-     *   path="/addGuest",
-     *   summary="Add a new guest",
-     *   description="Adds a new guest with the provided information.",
-     *   @OA\RequestBody(
-     *     required=true,
-     *     @OA\JsonContent(ref="#/components/schemas/AddGuestInput"),
-     *   ),
-     *   @OA\Response(
-     *     response=201,
-     *     description="Guest added successfully",
-     *     @OA\JsonContent(
-     *       @OA\Property(property="message", type="string", example="Guest added successfully"),
-     *       @OA\Property(property="guest", ref="#/components/schemas/GuestInfo"),
-     *     ),
-     *   ),
-     *   @OA\Response(
-     *     response=400,
-     *     description="Bad request",
-     *     @OA\JsonContent(ref="#/components/schemas/ValidationErrors"),
-     *   ),
-     *   @OA\Response(
-     *     response=409,
-     *     description="Guest already exists",
-     *     @OA\JsonContent(
-     *       @OA\Property(property="error", type="string", example="Guest already exists"),
-     *     ),
-     *   ),
-     * )
-     */
     /**
      * Adds a guest to the database.
      *
@@ -439,44 +322,6 @@ class Authenticate
     }
 
     /**
-     * @OA\Delete(
-     *   path="/deleteGuest",
-     *   summary="Delete guest",
-     *   description="Deletes a guest based on the provided data.",
-     *   @OA\RequestBody(
-     *     required=true,
-     *     @OA\JsonContent(ref="#/components/schemas/DeleteGuestInput"),
-     *   ),
-     *   @OA\Response(
-     *     response=200,
-     *     description="Guest deleted successfully",
-     *     @OA\JsonContent(
-     *       @OA\Property(property="message", type="string", example="Guest deleted successfully"),
-     *       @OA\Property(property="guest", ref="#/components/schemas/GuestInfo"),
-     *     ),
-     *   ),
-     *   @OA\Response(
-     *     response=400,
-     *     description="Bad request",
-     *     @OA\JsonContent(ref="#/components/schemas/ValidationErrors"),
-     *   ),
-     *   @OA\Response(
-     *     response=401,
-     *     description="Unauthorized",
-     *     @OA\JsonContent(
-     *       @OA\Property(property="error", type="string", example="You do not have permission to delete this guest"),
-     *     ),
-     *   ),
-     *   @OA\Response(
-     *     response=500,
-     *     description="Internal Server Error",
-     *     @OA\JsonContent(
-     *       @OA\Property(property="error", type="string", example="An error occurred"),
-     *     ),
-     *   ),
-     * )
-     */
-    /**
      * Deletes a guest with the specified ID and admin reference from the guest table.
      *
      * @param string $id The ID of the guest to delete.
@@ -494,37 +339,6 @@ class Authenticate
         return $stmt->execute();
     }
 
-    /**
-     * @OA\Patch(
-     *   path="/updateGuest",
-     *   summary="Update guest details",
-     *   description="Updates guest details based on the provided data.",
-     *   @OA\RequestBody(
-     *     required=true,
-     *     @OA\JsonContent(ref="#/components/schemas/UpdateGuestInput"),
-     *   ),
-     *   @OA\Response(
-     *     response=200,
-     *     description="Guest details updated successfully",
-     *     @OA\JsonContent(
-     *       @OA\Property(property="message", type="string", example="Updated successfully"),
-     *       @OA\Property(property="guest", type="string", example="Jane Doe"),
-     *     ),
-     *   ),
-     *   @OA\Response(
-     *     response=304,
-     *     description="No modification needed",
-     *     @OA\JsonContent(
-     *       @OA\Property(property="message", type="string", example="Nothing to modify"),
-     *     ),
-     *   ),
-     *   @OA\Response(
-     *     response=400,
-     *     description="Bad request",
-     *     @OA\JsonContent(ref="#/components/schemas/ValidationErrors"),
-     *   ),
-     * )
-     */
     /**
      * Updates a guest in the database.
      *
@@ -574,34 +388,6 @@ class Authenticate
     }
 
     /**
-     * @OA\Get(
-     *   path="/qrencode",
-     *   summary="Encode user for QR Code",
-     *   description="Encodes user information for a QR Code based on the provided ID.",
-     *   @OA\Parameter(
-     *     name="id",
-     *     in="query",
-     *     required=true,
-     *     description="User ID",
-     *     @OA\Schema(type="integer"),
-     *   ),
-     *   @OA\Response(
-     *     response=200,
-     *     description="User encoded for QR Code successfully",
-     *     @OA\JsonContent(
-     *       @OA\Property(property="qrdata", type="string"),
-     *     ),
-     *   ),
-     *   @OA\Response(
-     *     response=404,
-     *     description="User not found",
-     *     @OA\JsonContent(
-     *       @OA\Property(property="error", type="string", example="User not found"),
-     *     ),
-     *   ),
-     * )
-     */
-    /**
      * Search for the guest in the database and return the guest as encoded string.
      * 
      * @param string $guest_id The guest identifier to be searched.
@@ -617,32 +403,6 @@ class Authenticate
     }
 
 
-    /**
-     * @OA\Post(
-     *   path="/qrdecode",
-     *   summary="Decode QR Code",
-     *   description="Decodes the provided data as a QR Code.",
-     *   @OA\RequestBody(
-     *     required=true,
-     *     @OA\JsonContent(ref="#/components/schemas/QRDecodeInput"),
-     *   ),
-     *   @OA\Response(
-     *     response=200,
-     *     description="QR Code decoded successfully",
-     *     @OA\JsonContent(
-     *       @OA\Property(property="qrdata", type="string"),
-     *     ),
-     *   ),
-     *   @OA\Response(
-     *     response=400,
-     *     description="Bad request",
-     *     @OA\JsonContent(
-     *       @OA\Property(property="error", type="string", example="Invalid QR Code"),
-     *       @OA\Property(property="data", type="array", example={"data": "provided data"}),
-     *     ),
-     *   ),
-     * )
-     */
     /**
      * Decodes the given encoded data for a QR code.
      *
@@ -662,55 +422,6 @@ class Authenticate
     }
 
     /**
-     * @OA\Get(
-     *   path="/userList",
-     *   summary="Get the list of users",
-     *   description="Retrieves a list of users based on admin authorization.",
-     *   @OA\Parameter(
-     *     name="admin",
-     *     in="query",
-     *     required=true,
-     *     description="Admin authorization ID",
-     *     @OA\Schema(type="integer"),
-     *   ),
-     *   @OA\Parameter(
-     *     name="page",
-     *     in="query",
-     *     required=false,
-     *     description="Page number for pagination",
-     *     @OA\Schema(type="integer"),
-     *   ),
-     *   @OA\Parameter(
-     *     name="per_page",
-     *     in="query",
-     *     required=false,
-     *     description="Number of items per page",
-     *     @OA\Schema(type="integer"),
-     *   ),
-     *   @OA\Response(
-     *     response=200,
-     *     description="List of users",
-     *     @OA\JsonContent(
-     *       @OA\Property(property="users", type="array", @OA\Items(ref="#/components/schemas/UserInfo")),
-     *     ),
-     *   ),
-     *   @OA\Response(
-     *     response=401,
-     *     description="Unauthorized",
-     *     @OA\JsonContent(
-     *       @OA\Property(property="error", type="string", example="Unauthorized"),
-     *     ),
-     *   ),
-     *   @OA\Response(
-     *     response=404,
-     *     description="Admin not found",
-     *     @OA\JsonContent(
-     *       @OA\Property(property="error", type="string", example="Admin not found"),
-     *     ),
-     *   ),
-     * )
-     */
-    /**
      * Retrieves a list of users from the database based on the provided admin ID.
      *
      * @param string $admin_id The ID of the admin.
@@ -720,6 +431,9 @@ class Authenticate
     {
         $page = max(0, $page - 1);
         $offset = $page * $per_page;
+
+        $adminName = $this->getAdminName((int)$admin_id);
+        if (!$adminName) return false;
         $sql = "SELECT 
                     COUNT(*) OVER() AS total_rows,
                     id, 
@@ -742,7 +456,15 @@ class Authenticate
         $stmt->execute();
         $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-        if (empty($result)) return false;
+        if (empty($result)) {
+            return [
+                'users' => [],
+                'page' => 1,
+                'per_page' => per_page,
+                'total_pages' => 0,
+                'total_items' => 0,
+            ];
+        }
         $total_rows = (int)($result[0]['total_rows']);
         $userList = [];
         foreach ($result as $row) {
@@ -760,118 +482,6 @@ class Authenticate
         return $finalResult;
     }
 
-    /**
-     * @OA\Get(
-     *   path="/guestList",
-     *   summary="Get list of guests",
-     *   description="Retrieves a list of guests based on the provided parameters.",
-     *   @OA\Parameter(
-     *     name="admin_ref",
-     *     in="query",
-     *     required=true,
-     *     description="Admin Reference ID",
-     *     @OA\Schema(type="integer"),
-     *   ),
-     *   @OA\Parameter(
-     *     name="page",
-     *     in="query",
-     *     required=false,
-     *     description="Page number (default: 1)",
-     *     @OA\Schema(type="integer", default=1),
-     *   ),
-     *   @OA\Parameter(
-     *     name="per_page",
-     *     in="query",
-     *     required=false,
-     *     description="Items per page (default: 20)",
-     *     @OA\Schema(type="integer", default=20),
-     *   ),
-     *   @OA\Response(
-     *     response=200,
-     *     description="Guest list retrieved successfully",
-     *     @OA\JsonContent(
-     *       @OA\Property(property="guests", type="array", @OA\Items(ref="#/components/schemas/GuestInfo")),
-     *       @OA\Property(property="total_pages", type="integer"),
-     *       @OA\Property(property="total_items", type="integer"),
-     *     ),
-     *   ),
-     *   @OA\Response(
-     *     response=400,
-     *     description="Bad request",
-     *     @OA\JsonContent(ref="#/components/schemas/ValidationErrors"),
-     *   ),
-     *   @OA\Response(
-     *     response=401,
-     *     description="Unauthorized",
-     *     @OA\JsonContent(
-     *       @OA\Property(property="error", type="string", example="Unauthorized"),
-     *     ),
-     *   ),
-     *   @OA\Response(
-     *     response=404,
-     *     description="Admin not found",
-     *     @OA\JsonContent(
-     *       @OA\Property(property="error", type="string", example="Admin not found"),
-     *     ),
-     *   ),
-     * )
-     */
-    /**
-     * @OA\Get(
-     *   path="/guestList",
-     *   summary="Get list of guests",
-     *   description="Retrieves a list of guests based on the provided parameters.",
-     *   @OA\Parameter(
-     *     name="admin_ref",
-     *     in="query",
-     *     required=true,
-     *     description="Admin Reference ID",
-     *     @OA\Schema(type="integer"),
-     *   ),
-     *   @OA\Parameter(
-     *     name="page",
-     *     in="query",
-     *     required=false,
-     *     description="Page number (default: 1)",
-     *     @OA\Schema(type="integer", default=1),
-     *   ),
-     *   @OA\Parameter(
-     *     name="per_page",
-     *     in="query",
-     *     required=false,
-     *     description="Items per page (default: 20)",
-     *     @OA\Schema(type="integer", default=20),
-     *   ),
-     *   @OA\Response(
-     *     response=200,
-     *     description="Guest list retrieved successfully",
-     *     @OA\JsonContent(
-     *       @OA\Property(property="guests", type="array", @OA\Items(ref="#/components/schemas/GuestInfo")),
-     *       @OA\Property(property="total_pages", type="integer"),
-     *       @OA\Property(property="total_items", type="integer"),
-     *     ),
-     *   ),
-     *   @OA\Response(
-     *     response=400,
-     *     description="Bad request",
-     *     @OA\JsonContent(ref="#/components/schemas/ValidationErrors"),
-     *   ),
-     *   @OA\Response(
-     *     response=401,
-     *     description="Unauthorized",
-     *     @OA\JsonContent(
-     *       @OA\Property(property="error", type="string", example="Unauthorized"),
-     *     ),
-     *   ),
-     *   @OA\Response(
-     *     response=404,
-     *     description="Admin not found",
-     *     @OA\JsonContent(
-     *       @OA\Property(property="error", type="string", example="Admin not found"),
-     *     ),
-     *   ),
-     * )
-     */
     public function guestList(int $admin_id, int $page = 0, int $per_page = 20)
     {
         $page = max(0, $page - 1);
