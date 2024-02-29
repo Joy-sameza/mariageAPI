@@ -41,4 +41,4 @@ jobs:
         with:
           push: true
           context: .
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/mariageapi:latest
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/mariageapi:latest, ${{ secrets.DOCKERHUB_USERNAME }}/mariageapi:v${{ github.run_number }}
