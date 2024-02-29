@@ -20,7 +20,7 @@ class Controller
      */
     public function processRequest(string $method, string $path, ?string $id): void
     {
-        if (!empty($id) && (str_contains($path, "update") || $path === "delete" || $path === "qrencode")) $this->getResourceRequest($method, $id, $path);
+        if (!empty($id) && (str_contains($path, "update") || $path === "qrencode")) $this->getResourceRequest($method, $id, $path);
         else $this->getResourceCollection($method, $path);
     }
 
@@ -69,16 +69,16 @@ class Controller
                         echo json_encode($output);
                         break;
                     case 'userList':
-                        if (!isset($_REQUEST['admin'])) {
+                        if (!isset($_GET['admin'])) {
                             http_response_code(401);
                             echo json_encode([
                                 "error" => "Unauthorized",
                             ]);
                             return;
                         }
-                        $admin = filter_var($_REQUEST['admin'], FILTER_SANITIZE_NUMBER_INT);
-                        $page = isset($_REQUEST['page']) && is_int((int)$_REQUEST['page']) ? (int)$_REQUEST['page'] : 1;
-                        $limit = isset($_REQUEST['per_page']) && is_int((int)$_REQUEST['per_page']) ? (int)$_REQUEST['per_page'] : 20;
+                        $admin = filter_var($_GET['admin'], FILTER_SANITIZE_NUMBER_INT);
+                        $page = isset($_GET['page']) && is_int((int)$_GET['page']) ? (int)$_GET['page'] : 1;
+                        $limit = isset($_GET['per_page']) && is_int((int)$_GET['per_page']) ? (int)$_GET['per_page'] : 20;
 
                         $output = $this->RegisterLogin->userList($admin, $page, $limit);
                         if ($output === false) {
@@ -91,16 +91,16 @@ class Controller
                         echo json_encode($output);
                         break;
                     case 'guestList':
-                        if (!isset($_REQUEST['admin'])) {
+                        if (!isset($_GET['admin'])) {
                             http_response_code(401);
                             echo json_encode([
                                 "error" => "Unauthorized",
                             ]);
                             return;
                         }
-                        $admin = filter_var($_REQUEST['admin'], FILTER_SANITIZE_NUMBER_INT);
-                        $page = isset($_REQUEST['page']) && is_int((int)$_REQUEST['page']) ? (int)$_REQUEST['page'] : 1;
-                        $limit = isset($_REQUEST['per_page']) && is_int((int)$_REQUEST['per_page']) ? (int)$_REQUEST['per_page'] : 20;
+                        $admin = filter_var($_GET['admin'], FILTER_SANITIZE_NUMBER_INT);
+                        $page = isset($_GET['page']) && is_int((int)$_GET['page']) ? (int)$_GET['page'] : 1;
+                        $limit = isset($_GET['per_page']) && is_int((int)$_GET['per_page']) ? (int)$_GET['per_page'] : 20;
 
                         $output = $this->RegisterLogin->guestList($admin, $page, $limit);
                         if ($output === false) {
@@ -192,6 +192,56 @@ class Controller
                         break;
                 }
                 break;
+            
+            case 'DELETE':
+                if ($path !== "delete") {
+                    http_response_code(400);
+                    echo json_encode(["error" => "Invalid request"]);
+                    break;
+                }
+                if (!isset($_GET['userId']) || !isset($_GET['adminId'])) {
+                    http_response_code(400);
+                    echo json_encode(["error" => "Admin and User IDs are both required and need to be integers"]);
+                    return;
+                }
+                if (!is_int((int)$_GET['adminId']) || !is_int((int)$_GET['userId'])) {
+                    http_response_code(400);
+                    echo json_encode(["error" => "Admin and User IDs are both required and need to be integers"]);
+                    return;
+                }
+                $adminId = (int)$_GET['adminId'];
+                $userId = (int)$_GET['userId'];
+
+                $isStaff = true;
+                $userData = $this->RegisterLogin->get($userId, $isStaff);
+
+                if (!$userData) {
+                    http_response_code(404);
+                    echo json_encode([
+                        'error' => 'User not found'
+                    ]);
+                    return;
+                }
+
+                if ($userData['admin_ref'] !== $adminId) {
+                    http_response_code(401);
+                    echo json_encode(["error" => "You are not authorized to delete this user"]);
+                    return;
+                }
+
+                $res = $this->RegisterLogin->deleteUser($userId, $adminId);
+                if ($res === false) {
+                    http_response_code(500);
+                    echo json_encode([
+                        'error' => 'An error occured'
+                    ]);
+                    break;
+                }
+                echo json_encode([
+                    "message" => "Deleted successfully",
+                    "user" => "$userData[name]",
+                ]);
+                break;
             default:
                 http_response_code(405);
                 echo json_encode([
@@ -223,11 +273,11 @@ class Controller
             echo json_encode(['error' => $err]);
             return;
         }
-        $data = $this->RegisterLogin->get($id, $path === "update" || $path === "delete");
+        $data = $this->RegisterLogin->get($id, $path === "update");
         if (!$data) {
             http_response_code(404);
             echo json_encode([
-                'error' => ($path !== "update" && $path !== "delete") ? 'Guest not found' : 'User not found'
+                'error' => ($path !== "update") ? 'Guest not found' : 'User not found'
             ]);
             return;
         }
@@ -272,32 +322,6 @@ class Controller
                     ]);
                     break;
                 }
-                break;
-            case 'DELETE':
-                if ($path !== "delete") {
-                    http_response_code(400);
-                    echo json_encode(["error" => "Invalid request"]);
-                    break;
-                }
-                if (!isset($_GET['userId']) || !isset($_GET['adminId'])) {
-                    http_response_code(400);
-                    echo json_encode(["error" => "Admin and User IDs are both required"]);
-                    return;
-                }
-                $adminId = $_GET['adminId'];
-                $userId = $_GET['userId'];
-                $res = $this->RegisterLogin->deleteUser($userId, $adminId);
-                if ($res === false) {
-                    http_response_code(500);
-                    echo json_encode([
-                        'error' => 'An error occured'
-                    ]);
-                    break;
-                }
-                echo json_encode([
-                    "message" => "Deleted successfully",
-                    "user" => "$data[name]",
-                ]);
                 break;
             default:
                 http_response_code(405);

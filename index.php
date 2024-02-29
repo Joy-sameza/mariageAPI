@@ -27,6 +27,9 @@ if ($part[1] != 'auth')
     return http_response_code(404);
 
 $path = $part[2];
+if (str_contains($path, '?')) {
+    $path = explode("?", $path)[0];
+}
 $id = null;
 if (!empty($part[3])) $id = $part[3];
 
