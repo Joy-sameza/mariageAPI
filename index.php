@@ -23,8 +23,8 @@ $request = $_SERVER['REQUEST_URI'];
 $method = $_SERVER['REQUEST_METHOD'];
 
 $part = explode("/", $request);
-if ($part[1] != 'auth')
-    return http_response_code(404);
+// if ($part[1] != 'auth')
+//     return http_response_code(404);
 
 $path = $part[2];
 if (str_contains($path, '?')) {
