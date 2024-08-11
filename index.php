@@ -42,6 +42,6 @@ $auth = new Auth(new JWT(), $key);
 
 $authenticate = new Authenticate($database, $auth);
 
-$controller = new Controller($authenticate);
+$controller = new Controller($authenticate, $auth);
 
 $controller->processRequest($method, $path, $id);
