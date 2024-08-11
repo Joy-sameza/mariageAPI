@@ -6,9 +6,7 @@ class Controller
      *
      * @param RegisterLogin $RegisterLogin The RegisterLoginrier object.
      */
-    public function __construct(private Authenticate $RegisterLogin)
-    {
-    }
+    public function __construct(private Authenticate $RegisterLogin, private Auth $auth) {}
 
     /**
      * Process a request.
@@ -20,8 +18,12 @@ class Controller
      */
     public function processRequest(string $method, string $path, ?string $id): void
     {
-        if (!empty($id) && (str_contains($path, "update") || $path === "qrencode")) $this->getResourceRequest($method, $id, $path);
-        else $this->getResourceCollection($method, $path);
+        if ($path !== "login" || $path !== "registerAdmin" || $path !== "register") {
+            $this->verifyAuthorization();
+        }
+        if (!empty($id) && (str_contains($path, "update") || $path === "qrencode")) {
+            $this->getResourceRequest($method, $id, $path);
+        } else $this->getResourceCollection($method, $path);
     }
 
     /**
@@ -192,7 +194,7 @@ class Controller
                         break;
                 }
                 break;
-            
+
             case 'DELETE':
                 if ($path !== "delete") {
                     http_response_code(400);
@@ -441,5 +443,26 @@ class Controller
             return $headers['authorization'];
         }
         return null;
+    }
+
+    private function verifyAuthorization(): void
+    {
+        $authorization = $this->retrieveAuthorizationFromHeaders();
+        if ($authorization === null) {
+            http_response_code(401);
+            echo json_encode([
+                "error" => "Unauthorized",
+            ]);
+            return;
+        }
+        $token = explode(" ", $authorization)[1];
+        $verified = $this->auth->verify($token);
+        if ($verified === false) {
+            http_response_code(403);
+            echo json_encode([
+                "error" => "Permission denied",
+            ]);
+            return;
+        }
     }
 }
